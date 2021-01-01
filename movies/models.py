@@ -1,6 +1,7 @@
 from datetime import date
 
 from django.db import models
+from django.shortcuts import reverse
 
 
 class Category(models.Model):
@@ -82,6 +83,12 @@ class Movie(models.Model):
     def __str__(self):
         return self.title
 
+    def get_absolute_url(self):
+        return reverse('movie_detail', kwargs={'slug': self.url})
+
+    def get_review(self):
+        return self.review_set.filter(parent__isnull=True)
+
 
 class MovieShots(models.Model):
     """ Кадры из фильма """
@@ -141,3 +148,5 @@ class Review(models.Model):
 
     def __str__(self):
         return f'{self.name} - {self.movie}'
+
+
