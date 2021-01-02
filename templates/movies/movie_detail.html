@@ -1,5 +1,5 @@
 {% extends 'movies/base.html' %}
-{% load static %}
+{% load static i18n %}
 
 {% block title %}{{ movie.title }}{% endblock %}
 
@@ -21,7 +21,7 @@
                 <h3 class="editContent" style="outline: none; cursor: inherit;">{{ movie.title }}</h3>
                 <h5 class="editContent">{{ movie.country }}</h5>
                 <ul>
-                    <li style="list-style: none"><span><b>Год:</b> {{ movie.year }}</span></li>
+                    <li style="list-style: none"><span><b>{% trans 'Год' %}:</b> {{ movie.year }}</span></li>
                     <li style="list-style: none"><span><b>Страна:</b> {{ movie.country }}</span>
                     </li>
                     <li style="list-style: none"><span><b>Слоган:</b> {{ movie.tagline }}</span>
@@ -49,7 +49,7 @@
                                     </span>
                     </li>
                     <li style="list-style: none">
-                        <span><b>Премьера в мире:</b> {{ movie.world_premiere }}</span>
+                        <span><b>{% trans 'Премьера в мире:' %}</b> {{ movie.world_premiere }}</span>
                     </li>
                     <li style="list-style: none">
                         <span><b>Бюджет:</b> ${{ movie.budget }}</span></li>
