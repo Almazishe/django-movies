@@ -1,7 +1,18 @@
 from django.contrib import admin
+from django import forms
 from django.utils.safestring import mark_safe
 
+from ckeditor_uploader.widgets import CKEditorUploadingWidget
+
 from .models import Category, Genre, Movie, MovieShots, Actor, Rating, RatingStar, Review
+
+
+class MovieAdminForm(forms.ModelForm):
+    description = forms.CharField(widget=CKEditorUploadingWidget(), label='Описание')
+
+    class Meta:
+        model = Movie
+        fields = '__all__'
 
 
 @admin.register(Category)
@@ -37,6 +48,8 @@ class MovieAdmin(admin.ModelAdmin):
     save_as = True
     list_editable = ("draft",)
     readonly_fields = ("get_poster",)
+    form = MovieAdminForm
+    actions = ("publish", "unpublish",)
     fieldsets = (
         (None, {
             "fields": (("title", "tagline"),)
@@ -62,7 +75,35 @@ class MovieAdmin(admin.ModelAdmin):
     def get_poster(self, obj):
         return mark_safe(f'<img src={obj.poster.url} width="400"')
 
+    def unpublish(self, request, queryset):
+        """ Снять с публикации """
+
+        row_update = queryset.update(draft=True)
+        if row_update == 1:
+            message_bit = "1 запись оформлена"
+        else:
+            message_bit = f'{row_update} записей обновлены'
+
+        self.message_user(request, f'{message_bit}')
+
+    def publish(self, request, queryset):
+        """ Опубликовать """
+
+        row_update = queryset.update(draft=False)
+        if row_update == 1:
+            message_bit = "1 запись оформлена"
+        else:
+            message_bit = f'{row_update} записей обновлены'
+
+        self.message_user(request, f'{message_bit}')
+
     get_poster.short_description = "Постер"
+    publish.short_description = 'Опубликовать'
+    publish.allowed_permissions = ('change',)
+
+    unpublish.short_description = 'Снять с публикации'
+    unpublish.allowed_permissions = ('change',)
+
 
 
 @admin.register(Review)
@@ -103,7 +144,7 @@ class MovieShotsAdmin(admin.ModelAdmin):
 @admin.register(Rating)
 class RatingAdmin(admin.ModelAdmin):
     """ Рейтинг """
-    list_display = ("movie", "ip",)
+    list_display = ("movie", "star", "ip",)
 
 
 admin.site.register(RatingStar)

@@ -34,6 +34,11 @@ class Actor(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse('actor_detail', kwargs={
+            "slug": self.name
+        })
+
 
 class Genre(models.Model):
     """ Genre model """
@@ -60,7 +65,7 @@ class Movie(models.Model):
     year = models.PositiveSmallIntegerField('Дата выхода', default=2020)
     country = models.CharField('Страна', max_length=30)
     directors = models.ManyToManyField(Actor, verbose_name='Режиссер', related_name='film_director')
-    actors = models.ManyToManyField(Actor, verbose_name='Актеры', related_name='film_actors')
+    actors = models.ManyToManyField(Actor, verbose_name='Актеры', related_name='film_actor')
     genres = models.ManyToManyField(Genre, verbose_name='Жанры')
     world_premiere = models.DateField('Премьера в мире', default=date.today)
     budget = models.PositiveIntegerField('Бюджет', default=0, help_text='Указать сумму в долларах')
@@ -114,9 +119,10 @@ class RatingStar(models.Model):
     class Meta:
         verbose_name = 'Звезда рейтинга'
         verbose_name_plural = 'Звезды рейтинга'
+        ordering = ('-value',)
 
     def __str__(self):
-        return self.value
+        return f'{self.value}'
 
 
 class Rating(models.Model):
@@ -148,5 +154,3 @@ class Review(models.Model):
 
     def __str__(self):
         return f'{self.name} - {self.movie}'
-
-

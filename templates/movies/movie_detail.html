@@ -30,14 +30,14 @@
                                     <span>
                                         <b>Режиссер:</b>
                                         {% for director in movie.directors.all %}
-                                            {{ director.name }}
+                                            <a href="{{ director.get_absolute_url }}">{{ director.name }}</a>,
                                         {% endfor %}
                                     </span>
                     </li>
                     <li style="list-style: none">
                                     <span><b>Актеры:</b>
                                         {% for actor in movie.actors.all %}
-                                            {{ actor.name }}
+                                            <a href="{{ actor.get_absolute_url }}">{{ actor.name }}</a>,
                                         {% endfor %}
                                     </span>
                     </li>
@@ -59,20 +59,19 @@
                         <span><b>Сборы в мире:</b> ${{ movie.fees_in_world }}</span>
                     </li>
                     <li style="list-style: none">
-                        <a href="#"><b>Рейтинг:</b>
-                            <span class="fa fa-star" aria-hidden="true"
-                                  style="outline: none; cursor: inherit;"></span>
-                            <span class="fa fa-star" aria-hidden="true"
-                                  style="outline: none; cursor: inherit;"></span>
-                            <span class="fa fa-star" aria-hidden="true"
-                                  style="outline: none; cursor: inherit;"></span>
-                            <span class="fa fa-star" aria-hidden="true"
-                                  style="outline: none; cursor: inherit;"></span>
-                            <span class="fa fa-star" aria-hidden="true"
-                                  style="outline: none; cursor: inherit;"></span>
-                            <span class="editContent"
-                                  style="outline: none; cursor: inherit;">5.0</span>
-                        </a>
+                        <form action="{% url 'add_rating' %}" method="POST" name="rating">
+                            <b>Рейтинг:</b>
+                            {% csrf_token %}
+                            <input type="hidden" value="{{ request.path }}" name="next">
+                            <input type="hidden" value="{{ movie.id }}" name="movie">
+                            <span class="rating">
+                                {% for k,v in star_form.fields.star.choices %}
+                                    <input type="radio" id="rating{{ v }}" name="star" value="{{ k }}">
+                                    <label for="rating{{ v }}">{{ k }}</label>
+                                {% endfor %}
+                            </span>
+                            <span class="editContent">4.0</span>
+                        </form>
                     </li>
                     <div class="share-desc">
                         <div class="share">
@@ -117,17 +116,17 @@
                     <img src="{{ image.image.url }}" class="img-fluid img-movie-shots" alt="{{ image.description }}">
                 {% endfor %}
             </p>
-            <p class="col-12 editContent" style="outline: none; cursor: inherit;">{{ movie.description }}</p>
-            <p class="col-12 mt-3 italic-blue editContent"
-               style="outline: none; cursor: inherit;">
-                <iframe width="560" height="315"
-                        src="https://www.youtube.com/embed/A36LahZNUiE?controls=0"
-                        frameborder="0" allow="accelerometer; autoplay;
-                                                                           encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen>
-
-                </iframe>
-            </p>
+            <p class="col-12 editContent" style="outline: none; cursor: inherit;">{{ movie.description|safe }}</p>
+            {#            <p class="col-12 mt-3 italic-blue editContent"#}
+            {#               style="outline: none; cursor: inherit;">#}
+            {#                <iframe width="560" height="315"#}
+            {#                        src="https://www.youtube.com/embed/A36LahZNUiE?controls=0"#}
+            {#                        frameborder="0" allow="accelerometer; autoplay;#}
+            {#                                                                           encrypted-media; gyroscope; picture-in-picture"#}
+            {#                        allowfullscreen>#}
+            {##}
+            {#                </iframe>#}
+            {#            </p>#}
         </div>
         <hr>
         <div class="row">
@@ -154,17 +153,16 @@
                                 <label for="contactusername" class="editContent"
                                        style="">Имя
                                     *</label>
-                                <input type="text" class="form-control border" name="name"
-                                       id="contactusername" required="">
+                                {{ form.name }}
                             </div>
                             <div class="col-sm-6 form-group ml-sm-3 editContent"
                                  style="">
                                 <label for="contactemail" class="editContent"
                                        style="">Email
                                     *</label>
-                                <input type="email" class="form-control border" name="email"
-                                       id="contactemail" required="">
+                                {{ form.email }}
                             </div>
+                            {{ form.captcha }}
                         </div>
                         <button type="submit"
                                 class="mt-3 btn btn-success btn-block py-3"
