@@ -7,11 +7,11 @@ from .models import Contact
 class ContactForm(forms.ModelForm):
     """ Форма подписки по email """
 
-    captcha = ReCaptchaField()
+    # captcha = ReCaptchaField()
 
     class Meta:
         model = Contact
-        fields = ("email", "captcha",)
+        fields = ("email", )#"captcha",)
         widgets = {
             "email": forms.EmailInput(attrs={
                 "class": "editContent",
